@@ -1,0 +1,7 @@
+shell -$SHELL
+term xterm-color
+startup_message off
+defscrollback 30000
+autodetach on
+hardstatus alwayslastline
+hardstatus string '%{= kw}[ %{W}%H %{w}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{w}][%{W} %m/%d %{W}%c %{w}]'

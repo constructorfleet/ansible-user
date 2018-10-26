@@ -1,0 +1,55 @@
+---
+homebrew_repo: https://github.com/Homebrew/brew
+
+homebrew_prefix: /usr/local
+homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
+homebrew_brew_bin_path: /usr/local/bin
+
+local_username: "{{ ansible_user_id }}"
+
+homebrew_common_packages:
+  - ssh-copy-id
+  - tmux
+  - screen
+  - python
+  - git
+  - nmap
+  - lftp
+  - ipmitool
+  - ansible
+  - unrar
+  - p7zip
+  - minicom
+
+homebrew_user_packages: []
+
+homebrew_uninstalled_packages: []
+
+homebrew_upgrade_all_packages: no
+
+homebrew_taps:
+  - homebrew/core
+  - homebrew/cask
+
+homebrew_cask_common_packages:
+  - 1password
+  - bartender
+  - synergy
+  - osxfuse
+  - google-chrome
+  - slack
+  - signal
+  - spotify
+  - sublime-text
+  - xquartz
+  - virtualbox
+  - divvy
+
+homebrew_cask_user_packages: []
+
+homebrew_cask_uninstalled_packages: []
+
+homebrew_cask_appdir: /Applications
+
+homebrew_use_brewfile: true
+homebrew_brewfile_dir: '~'

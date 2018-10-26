@@ -1,0 +1,33 @@
+---
+
+- name: Copy vim config files
+  copy:
+    src: vim/
+    mode: 0755
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.vim/"
+
+- name: Copy vimrc
+  copy:
+    src: vimrc
+    mode: 0755
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.vimrc"
+
+- name: Copy screenrc
+  copy:
+    src: screenrc
+    mode: 0755
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.screenrc"
+ 
+- name: Copy bash_profile
+  copy:
+    mode: 0600
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    content: "{{ bash_profile }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash_profile"

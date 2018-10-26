@@ -1,0 +1,161 @@
+---
+# Homebrew setup prerequisites.
+- name: Ensure Homebrew parent directory has correct permissions (on High Sierra).
+  file:
+    path: "{{ homebrew_prefix }}"
+    owner: root
+    state: directory
+  become: yes
+  when: "ansible_distribution_version.startswith('10.13')"
+
+- name: Ensure Homebrew parent directory has correct permissions (on non-'High Sierra' versions of Mac OS X).
+  file:
+    path: "{{ homebrew_prefix }}"
+    owner: root
+    group: "{{ local_user_groupname }}"
+    state: directory
+    mode: 0775
+  become: yes
+  when: "not ansible_distribution_version.startswith('10.13')"
+
+- name: Ensure Homebrew directory exists.
+  file:
+    path: "{{ homebrew_install_path }}"
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    state: directory
+    mode: 0775
+  become: yes
+
+# Clone Homebrew.
+- name: Ensure Homebrew is installed.
+  git:
+    repo: "{{ homebrew_repo }}"
+    version: master
+    dest: "{{ homebrew_install_path }}"
+    update: no
+    accept_hostkey: yes
+    depth: 1
+
+# Adjust Homebrew permissions.
+- name: Ensure proper permissions and ownership on homebrew_brew_bin_path dirs.
+  file:
+    path: "{{ homebrew_brew_bin_path }}"
+    state: directory
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    mode: 0775
+  become: yes
+
+- name: Ensure proper ownership on homebrew_install_path subdirs.
+  file:
+    path: "{{ homebrew_install_path }}"
+    state: directory
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+  become: yes
+
+# Place brew binary in proper location and complete setup.
+- name: Check if homebrew binary is already in place.
+  stat: "path={{ homebrew_brew_bin_path }}/brew"
+  register: homebrew_binary
+
+- name: Symlink brew to homebrew_brew_bin_path.
+  file:
+    src: "{{ homebrew_install_path }}/bin/brew"
+    dest: "{{ homebrew_brew_bin_path }}/brew"
+    state: link
+  when: homebrew_binary.stat.exists == false
+  become: yes
+
+- name: Ensure proper homebrew folders are in place.
+  file:
+    path: "{{ homebrew_prefix }}/{{ item }}"
+    state: directory
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+  become: yes
+  with_items:
+    - Cellar
+    - Homebrew
+    - Frameworks
+    - Caskroom
+    - bin
+    - etc
+    - include
+    - lib
+    - opt
+    - sbin
+    - share
+    - share/zsh
+    - share/zsh/site-functions
+    - var
+
+- name: Force update brew after installation.
+  command: "{{ homebrew_brew_bin_path }}/brew update --force"
+  when: homebrew_binary.stat.exists == false
+  become: no
+# Tap.
+- name: Ensure configured taps are tapped.
+  homebrew_tap: "tap={{ item }} state=present"
+  with_items: "{{ homebrew_taps }}"
+  become: no
+
+# Cask.
+- name: Install configured cask applications.
+  homebrew_cask:
+    name: "{{ item }}"
+    state: present
+    install_options: "appdir={{ homebrew_cask_appdir }}"
+  with_items: "{{ homebrew_cask_common_packages }}"
+  become: no
+
+- name: Install user-specific cask applications.
+  homebrew_cask:
+    name: "{{ item }}"
+    state: present
+    install_options: "appdir={{ homebrew_cask_appdir }}"
+  with_items: "{{ homebrew_cask_user_packages }}"
+  become: no
+
+- name: Ensure blacklisted cask applications are not installed.
+  homebrew_cask: "name={{ item }} state=absent"
+  with_items: "{{ homebrew_cask_uninstalled_packages }}"
+  become: no
+
+# Brew.
+- name: Ensure configured homebrew packages are installed.
+  homebrew:
+    name: "{{ item.name | default(item) }}"
+    install_options: "{{ item.install_options | default(omit) }}"
+    state: present
+  with_items: "{{ homebrew_common_packages }}"
+  become: no
+
+- name: Install user-specific homebrew packages.
+  homebrew:
+    name: "{{ item.name | default(item) }}"
+    install_options: "{{ item.install_options | default(omit) }}"
+    state: present
+  with_items: "{{ homebrew_user_packages }}"
+  become: no
+
+- name: Ensure blacklisted homebrew packages are not installed.
+  homebrew: "name={{ item }} state=absent"
+  with_items: "{{ homebrew_uninstalled_packages }}"
+  become: no
+
+- name: Upgrade all homebrew packages (if configured).
+  homebrew: update_homebrew=yes upgrade_all=yes
+  when: homebrew_upgrade_all_packages
+  become: no
+
+- name: Check for Brewfile.
+  stat:
+    path: "{{ homebrew_brewfile_dir }}/Brewfile"
+  register: homebrew_brewfile
+
+- name: Install from Brewfile.
+  command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
+  when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
+  become: no

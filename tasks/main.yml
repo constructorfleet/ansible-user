@@ -1,0 +1,9 @@
+---
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: ssh.yml
+- include: rc_files.yml
+- include: homebrew.yml
+  when: ansible_os_family == "Darwin"
+

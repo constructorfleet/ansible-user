@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =9
+let g:netrw_dirhist_1='/home/teagan/src/Teagan42/DotFiles/.zsh'
+let g:netrw_dirhist_2='/home/teagan/src/Teagan42/DotFiles'
+let g:netrw_dirhist_3='/home/teagan/src/Teagan42/DotFiles/.zsh'
+let g:netrw_dirhist_4='/home/teagan/.vim'
+let g:netrw_dirhist_5='/home/teagan/.vim/bundle'
+let g:netrw_dirhist_6='/Users/tglenn/.zsh'
+let g:netrw_dirhist_7='/Users/tglenn/src/android-studio-docker/provisioning'
+let g:netrw_dirhist_8='/Users/tglenn/src/home-ansible/roles/automation/defaults'
+let g:netrw_dirhist_9='/Users/tglenn/src/home-ansible/roles/user/tasks'
