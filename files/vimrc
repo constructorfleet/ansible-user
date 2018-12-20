@@ -9,9 +9,6 @@ set expandtab
 set backspace=indent,eol,start
 set nocompatible
 
-nnoremap / /\v
-vnoremap / /\v
-
 autocmd BufNewFile,BufRead *.json set ft=javascript
 autocmd BufNewFile,BufRead *.cls  set ft=java
 autocmd FileType yaml setlocal ai ts=2 sw=2 et
