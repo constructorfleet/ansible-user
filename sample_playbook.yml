@@ -1,7 +1,6 @@
 ---
 - name: Set up user-specific packages/configs etc
-  hosts: localhost
-  connection: local
+  hosts: all
   become: False
   tasks:
     - import_role:
