@@ -171,7 +171,7 @@ create a new group in your inventory for your local machine that will inherit th
 
 ```
 [username]
-localhost
+localhost ansible_connection=local
 ```
 
 #### playbook.yml
