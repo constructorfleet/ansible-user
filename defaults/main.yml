@@ -5,7 +5,7 @@ homebrew_prefix: /usr/local
 homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
 homebrew_brew_bin_path: /usr/local/bin
 
-local_username: "{{ ansible_user_id }}"
+local_username: "{{ ansible_env.USER }}"
 
 homebrew_common_packages:
   - ssh-copy-id
