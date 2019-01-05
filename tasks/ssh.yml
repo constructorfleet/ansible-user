@@ -5,18 +5,18 @@
     mode: 0755
     owner: "{{ ansible_user_id }}"
     content: "{{ ssh_config }}"
-    dest: "{{ user_homes_directory }}/{{ ansible_user_id }}/.ssh/config"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/config"
 
 - name: Setup SSH Public Key
   copy:
     mode: 0600
     owner: "{{ ansible_user_id }}"
     content: "{{ ssh_public_key }}"
-    dest: "{{ user_homes_directory }}/{{ ansible_user_id }}/.ssh/id_rsa.pub"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa.pub"
 
 - name: Setup SSH Private Key
   copy:
     mode: 0600
     owner: "{{ ansible_user_id }}"
     content: "{{ ssh_private_key }}"
-    dest: "{{ user_homes_directory }}/{{ ansible_user_id }}/.ssh/id_rsa"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa"
