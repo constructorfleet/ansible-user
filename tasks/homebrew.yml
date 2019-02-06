@@ -5,6 +5,7 @@
 #    path: "{{ homebrew_prefix }}"
 #    owner: root
 #    state: directory
+#    mode: 2775
 #  become: yes
 #  when: "ansible_distribution_version.startswith('10.13')"
 #
@@ -14,17 +15,18 @@
 #    owner: root
 #    group: "{{ local_user_groupname }}"
 #    state: directory
-#    mode: 0775
+#    mode: 2775
 #  become: yes
 #  when: "not ansible_distribution_version.startswith('10.13')"
 
 - name: Ensure Homebrew directory exists.
   file:
     path: "{{ homebrew_install_path }}"
-    owner: "{{ local_username }}"
+    owner: root
     group: "{{ local_user_groupname }}"
     state: directory
-    mode: 0775
+    recurse: yes
+    mode: 02775
   become: yes
 
 # Clone Homebrew.
@@ -34,25 +36,40 @@
     version: master
     dest: "{{ homebrew_install_path }}"
     update: no
+    umask: "0000"
     accept_hostkey: yes
     depth: 1
+  become: yes
+
+- name: Ensure proper permissions and ownership on Homebrew repo.
+  file:
+    path: "{{ homebrew_install_path }}"
+    owner: root
+    group: "{{ local_user_groupname }}"
+    state: directory
+    recurse: yes
+    mode: 02775
+  become: yes
 
 # Adjust Homebrew permissions.
 - name: Ensure proper permissions and ownership on homebrew_brew_bin_path dirs.
   file:
     path: "{{ homebrew_brew_bin_path }}"
     state: directory
-    owner: "{{ local_username }}"
+    owner: root
     group: "{{ local_user_groupname }}"
-    mode: 0775
+    recurse: yes
+    mode: 02775
   become: yes
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
   file:
     path: "{{ homebrew_install_path }}"
     state: directory
-    owner: "{{ local_username }}"
+    owner: root
     group: "{{ local_user_groupname }}"
+    recurse: yes
+    mode: 02775
   become: yes
 
 # Place brew binary in proper location and complete setup.
@@ -65,6 +82,9 @@
     src: "{{ homebrew_install_path }}/bin/brew"
     dest: "{{ homebrew_brew_bin_path }}/brew"
     state: link
+    owner: root
+    group: "{{ local_user_groupname }}"
+    mode: 02775
   when: homebrew_binary.stat.exists == false
   become: yes
 
@@ -72,8 +92,10 @@
   file:
     path: "{{ homebrew_prefix }}/{{ item }}"
     state: directory
-    owner: "{{ local_username }}"
+    owner: root
     group: "{{ local_user_groupname }}"
+    mode: 02775
+    recurse: yes
   become: yes
   with_items:
     - Cellar
@@ -97,7 +119,9 @@
   become: no
 # Tap.
 - name: Ensure configured taps are tapped.
-  homebrew_tap: "tap={{ item }} state=present"
+  homebrew_tap:
+    tap: "{{ item }}"
+    state: present
   with_items: "{{ homebrew_taps }}"
   become: no
 
@@ -119,7 +143,9 @@
   become: no
 
 - name: Ensure blacklisted cask applications are not installed.
-  homebrew_cask: "name={{ item }} state=absent"
+  homebrew_cask:
+    name: "{{ item }}"
+    state: absent
   with_items: "{{ homebrew_cask_uninstalled_packages }}"
   become: no
 
@@ -141,12 +167,16 @@
   become: no
 
 - name: Ensure blacklisted homebrew packages are not installed.
-  homebrew: "name={{ item }} state=absent"
+  homebrew:
+    name: "{{ item }}"
+    state: absent
   with_items: "{{ homebrew_uninstalled_packages }}"
   become: no
 
 - name: Upgrade all homebrew packages (if configured).
-  homebrew: update_homebrew=yes upgrade_all=yes
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes
   when: homebrew_upgrade_all_packages
   become: no
 
