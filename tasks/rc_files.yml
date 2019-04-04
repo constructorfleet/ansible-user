@@ -23,7 +23,27 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.screenrc"
- 
+
+- name: Create git-aware-profile directory in user home directory
+  file:
+    state: directory
+    path: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-profile"
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    mode: 0775
+
+- name: Copy git-aware-profile files
+  copy:
+    src: "bash/git-aware-profile/{{item}}"
+    mode: 0755
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-profile/{{item}}"
+  with_items:
+    - colors.sh
+    - main.sh
+    - prompt.sh
+
 - name: Copy bash_profile
   copy:
     mode: 0600
