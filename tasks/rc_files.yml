@@ -24,21 +24,21 @@
     group: "{{ local_user_groupname }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.screenrc"
 
-- name: Create git-aware-profile directory in user home directory
+- name: Create git-aware-prompt directory in user home directory
   file:
     state: directory
-    path: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-profile"
+    path: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt"
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     mode: 0775
 
 - name: Copy git-aware-profile files
   copy:
-    src: "bash/git-aware-profile/{{item}}"
+    src: "bash/git-aware-prompt/{{item}}"
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-profile/{{item}}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt/{{item}}"
   with_items:
     - colors.sh
     - main.sh
