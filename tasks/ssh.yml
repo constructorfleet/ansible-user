@@ -3,20 +3,20 @@
 - name: Copy SSH Config
   copy:
     mode: 0755
-    owner: "{{ ansible_user_id }}"
+    owner: "{{ local_username }}"
     content: "{{ ssh_config }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/config"
 
 - name: Setup SSH Public Key
   copy:
     mode: 0600
-    owner: "{{ ansible_user_id }}"
+    owner: "{{ local_username }}"
     content: "{{ ssh_public_key }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa.pub"
 
 - name: Setup SSH Private Key
   copy:
     mode: 0600
-    owner: "{{ ansible_user_id }}"
+    owner: "{{ local_username }}"
     content: "{{ ssh_private_key }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa"
