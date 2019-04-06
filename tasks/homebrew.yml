@@ -26,7 +26,7 @@
     group: "{{ local_user_groupname }}"
     state: directory
     recurse: yes
-    mode: 02775
+    mode: 0777
   become: yes
 
 # Clone Homebrew.
@@ -48,7 +48,7 @@
     group: "{{ local_user_groupname }}"
     state: directory
     recurse: yes
-    mode: 02775
+    mode: 0777
   become: yes
 
 # Adjust Homebrew permissions.
@@ -59,7 +59,7 @@
     owner: root
     group: "{{ local_user_groupname }}"
     recurse: yes
-    mode: 02775
+    mode: 0777
   become: yes
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
@@ -69,7 +69,7 @@
     owner: root
     group: "{{ local_user_groupname }}"
     recurse: yes
-    mode: 02775
+    mode: 0777
   become: yes
 
 # Place brew binary in proper location and complete setup.
@@ -84,7 +84,7 @@
     state: link
     owner: root
     group: "{{ local_user_groupname }}"
-    mode: 02775
+    mode: 0777
   when: homebrew_binary.stat.exists == false
   become: yes
 
@@ -94,7 +94,7 @@
     state: directory
     owner: root
     group: "{{ local_user_groupname }}"
-    mode: 02775
+    mode: 0777
     recurse: yes
   become: yes
   with_items:
