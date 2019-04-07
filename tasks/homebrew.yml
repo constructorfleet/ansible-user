@@ -3,7 +3,7 @@
 #- name: Ensure Homebrew parent directory has correct permissions (on High Sierra).
 #  file:
 #    path: "{{ homebrew_prefix }}"
-#    owner: root
+#    owner: "{{ local_username }}"
 #    state: directory
 #    mode: 2775
 #  become: yes
@@ -12,7 +12,7 @@
 #- name: Ensure Homebrew parent directory has correct permissions (on non-'High Sierra' versions of Mac OS X).
 #  file:
 #    path: "{{ homebrew_prefix }}"
-#    owner: root
+#    owner: "{{ local_username }}"
 #    group: "{{ local_user_groupname }}"
 #    state: directory
 #    mode: 2775
@@ -22,11 +22,11 @@
 - name: Ensure Homebrew directory exists.
   file:
     path: "{{ homebrew_install_path }}"
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
     recurse: yes
-    mode: 0777
+    mode: 0775
   become: yes
 
 # Clone Homebrew.
@@ -44,11 +44,11 @@
 - name: Ensure proper permissions and ownership on Homebrew repo.
   file:
     path: "{{ homebrew_install_path }}"
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
     recurse: yes
-    mode: 0777
+    mode: 0775
   become: yes
 
 # Adjust Homebrew permissions.
@@ -56,20 +56,20 @@
   file:
     path: "{{ homebrew_brew_bin_path }}"
     state: directory
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     recurse: yes
-    mode: 0777
+    mode: 0775
   become: yes
 
 - name: Ensure proper ownership on homebrew_install_path subdirs.
   file:
     path: "{{ homebrew_install_path }}"
     state: directory
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     recurse: yes
-    mode: 0777
+    mode: 0775
   become: yes
 
 # Place brew binary in proper location and complete setup.
@@ -82,9 +82,9 @@
     src: "{{ homebrew_install_path }}/bin/brew"
     dest: "{{ homebrew_brew_bin_path }}/brew"
     state: link
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    mode: 0777
+    mode: 0775
   when: homebrew_binary.stat.exists == false
   become: yes
 
@@ -92,9 +92,9 @@
   file:
     path: "{{ homebrew_prefix }}/{{ item }}"
     state: directory
-    owner: root
+    owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    mode: 0777
+    mode: 0775
     recurse: yes
   become: yes
   with_items:
