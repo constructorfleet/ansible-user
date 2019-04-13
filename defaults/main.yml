@@ -47,6 +47,7 @@ homebrew_cask_common_packages:
   - divvy
   - iterm2
   - font-source-code-pro
+  - coreutils
 
 homebrew_cask_user_packages: []
 
