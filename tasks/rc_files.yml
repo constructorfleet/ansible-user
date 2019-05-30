@@ -51,3 +51,11 @@
     group: "{{ local_user_groupname }}"
     content: "{{ bash_profile }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.bash_profile"
+
+- name: Copy git config
+  copy:
+    mode: 0600
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    content: "{{ git_config }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.gitconfig"
