@@ -52,6 +52,34 @@
     content: "{{ bash_profile }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.bash_profile"
 
+- name: Check out oh-my-zsh
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh.git
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh"
+    update: no
+
+- name: Check out Powerlevel 10k Profile
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    update: no
+
+- name: Copy .zshrc
+  copy:
+    mode: 0600
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    content: "{{ zshrc }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.zshrc"
+
+- name: Copy Powerlevel 10K Config
+  copy:
+    mode: 0600
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    content: "{{ p10krc }}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.p10k.zsh"
+
 - name: Copy git config
   copy:
     mode: 0600
