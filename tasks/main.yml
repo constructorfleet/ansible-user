@@ -2,6 +2,9 @@
 - include_vars: "{{ ansible_os_family }}.yml"
   tags: always
 
+- include_tasks: shell.yml
+  tags: shell
+
 - include_tasks: ssh.yml
   tags: ssh_config
 
