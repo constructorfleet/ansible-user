@@ -6,9 +6,18 @@ homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
 homebrew_brew_bin_path: /usr/local/bin
 
 local_username: "{{ ansible_env.USER }}"
+local_user_shell: /bin/zsh
 
 homebrew_common_packages:
   - ssh-copy-id
+  - sshpass
+  - jq
+  - ccze
+  - freetype
+  - virt-viewer
+  - tree
+  - redis
+  - telnet
   - tmux
   - screen
   - python
@@ -45,9 +54,21 @@ homebrew_cask_common_packages:
   - sublime-text
   - xquartz
   - virtualbox
+  - java
+  - fluid
+  - viscosity
   - divvy
   - iterm2
+  - font-hack-nerd-font-mono
+  - font-hack-nerd-font
+  - font-sourcecodepro-nerd-font-mono
+  - font-sourcecodepro-nerd-font
   - font-source-code-pro
+  - font-meslo-nerd-font-mono
+  - font-meslo-nerd-font
+  - font-anonymouspro-nerd-font-mono
+  - font-anonymouspro-nerd-font
+  - font-anonymous-pro
 
 homebrew_cask_user_packages: []
 
