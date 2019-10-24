@@ -1,5 +1,5 @@
 shell -$SHELL
-term xterm-color
+term xterm-256color
 startup_message off
 defscrollback 30000
 autodetach on
