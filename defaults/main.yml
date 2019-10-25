@@ -10,11 +10,9 @@ local_user_shell: /bin/zsh
 
 homebrew_common_packages:
   - ssh-copy-id
-  - sshpass
   - jq
   - ccze
   - freetype
-  - virt-viewer
   - tree
   - redis
   - telnet
