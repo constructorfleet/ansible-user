@@ -1,5 +1,13 @@
 ---
 
+- name: Create .ssh directory if needed
+  file:
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh"
+    state: directory
+    owner: "{{ local_username }}"
+    group: "{{ local_user_groupname }}"
+    mode: 0744
+
 - name: Copy SSH Config
   copy:
     mode: 0755
