@@ -85,7 +85,7 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     mode: 0775
-  when: homebrew_binary.stat.exists == false
+  when: not homebrew_binary.stat.exists
   become: yes
 
 - name: Ensure proper homebrew folders are in place.
@@ -115,7 +115,7 @@
 
 - name: Force update brew after installation.
   command: "{{ homebrew_brew_bin_path }}/brew update --force"
-  when: homebrew_binary.stat.exists == false
+  when: not homebrew_binary.stat.exists
   become: no
 # Tap.
 - name: Ensure configured taps are tapped.
