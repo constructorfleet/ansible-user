@@ -1,4 +1,6 @@
 ---
 - name: Set user shell account
-  command: "chsh -s {{ local_user_shell }} {{ local_username }}"
+  user:
+    name: "{{ local_username }}"
+    shell: "{{ local_user_shell }}"
   become: yes
