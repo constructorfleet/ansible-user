@@ -4,18 +4,34 @@
   tags: always
 
 - name: Configure Shell
-  include_tasks: shell.yml
+  include_tasks:
+    file: shell.yml
+    apply:
+      tags:
+        - shell
   tags: shell
 
 - name: Configure SSH
-  include_tasks: ssh.yml
+  include_tasks:
+    file: ssh.yml
+    apply:
+      tags:
+        - ssh_config
   tags: ssh_config
 
 - name: Setup .rc Files
-  include_tasks: rc_files.yml
+  include_tasks:
+    file: rc_files.yml
+    apply:
+      tags:
+        - rcfiles
   tags: rcfiles
 
 - name: Install homebrew packages
-  include_tasks: homebrew.yml
+  include_tasks:
+    file: homebrew.yml
+    apply:
+      tags:
+        - homebrew
   tags: homebrew
   when: ansible_os_family == "Darwin"
