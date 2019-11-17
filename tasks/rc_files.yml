@@ -34,11 +34,11 @@
 
 - name: Copy git-aware-profile files
   copy:
-    src: "bash/git-aware-prompt/{{item}}"
+    src: "bash/git-aware-prompt/{{ item }}"
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt/{{item}}"
+    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt/{{ item }}"
   with_items:
     - colors.sh
     - main.sh
@@ -56,12 +56,14 @@
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
     dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh"
+    version: master
     update: no
 
 - name: Check out Powerlevel 10k Profile
   git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    version: master
     update: no
 
 - name: Copy .zshrc
