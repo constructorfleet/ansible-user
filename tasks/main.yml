@@ -1,7 +1,6 @@
 ---
 - name: Load OS Variables
   include_vars: "{{ ansible_os_family }}.yml"
-  tags: always
 
 - name: Configure Shell
   include_tasks:
