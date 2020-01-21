@@ -117,6 +117,7 @@
   command: "{{ homebrew_brew_bin_path }}/brew update --force"
   when: not homebrew_binary.stat.exists
   become: no
+
 # Tap.
 - name: Ensure configured taps are tapped.
   homebrew_tap:
@@ -124,6 +125,9 @@
     state: present
   with_items: "{{ homebrew_taps }}"
   become: no
+  when:
+    - homebrew_taps is defined
+    - homebrew_taps != None
 
 # Cask.
 - name: Install configured cask applications.
@@ -134,6 +138,9 @@
   with_items: "{{ homebrew_cask_common_packages }}"
   become: no
   ignore_errors: true
+  when:
+    - homebrew_cask_common_packages is defined
+    - homebrew_cask_common_packages != None
 
 - name: Install user-specific cask applications.
   homebrew_cask:
@@ -143,6 +150,9 @@
   with_items: "{{ homebrew_cask_user_packages }}"
   become: no
   ignore_errors: true
+  when:
+    - homebrew_cask_user_packages is defined
+    - homebrew_cask_user_packages != None
 
 - name: Ensure blacklisted cask applications are not installed.
   homebrew_cask:
@@ -150,6 +160,9 @@
     state: absent
   with_items: "{{ homebrew_cask_uninstalled_packages }}"
   become: no
+  when:
+    - homebrew_common_packages is defined
+    - homebrew_common_packages != None
 
 # Brew.
 - name: Ensure configured homebrew packages are installed.
@@ -160,6 +173,9 @@
   with_items: "{{ homebrew_common_packages }}"
   become: no
   ignore_errors: true
+  when:
+    - homebrew_common_packages is defined
+    - homebrew_common_packages != None
 
 - name: Install user-specific homebrew packages.
   homebrew:
@@ -169,6 +185,9 @@
   with_items: "{{ homebrew_user_packages }}"
   become: no
   ignore_errors: true
+  when:
+    - homebrew_uninstalled_packages is defined
+    - homebrew_uninstalled_packages != None
 
 - name: Ensure blacklisted homebrew packages are not installed.
   homebrew:
@@ -176,6 +195,9 @@
     state: absent
   with_items: "{{ homebrew_uninstalled_packages }}"
   become: no
+  when:
+    - homebrew_uninstalled_packages is defined
+    - homebrew_uninstalled_packages != None
 
 - name: Upgrade all homebrew packages (if configured).
   homebrew:
