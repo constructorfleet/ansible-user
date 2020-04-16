@@ -8,6 +8,11 @@ homebrew_brew_bin_path: /usr/local/bin
 local_username: "{{ ansible_env.USER }}"
 local_user_shell: /bin/zsh
 
+mas_email: ""
+mas_password: ""
+mas_upgrade_all_apps: false
+mas_signin_dialog: false
+
 mac_app_store_packages: []
 
 homebrew_common_packages:
