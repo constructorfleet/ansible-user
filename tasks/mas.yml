@@ -32,6 +32,11 @@
   check_mode: false
   changed_when: false
 
+- name: print installed MAS apps
+  debug:
+    msg: "{{ mas_list.stdout }}"
+    verbosity: 1
+
 - name: Ensure configured MAS apps are installed.
   command: mas install "{{ item.id|default(item) }}"
   loop: "{{ mas_packages }}"
