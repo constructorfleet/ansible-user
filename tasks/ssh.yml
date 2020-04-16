@@ -15,6 +15,9 @@
     group: "{{ local_user_groupname }}"
     content: "{{ ssh_config }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/config"
+  when:
+    - ssh_config is defined
+    - ssh_config != None
 
 - name: Setup SSH Public Key
   copy:
@@ -23,6 +26,9 @@
     group: "{{ local_user_groupname }}"
     content: "{{ ssh_public_key }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa.pub"
+  when:
+    - ssh_public_key is defined
+    - ssh_public_key != None
 
 - name: Setup SSH Private Key
   copy:
@@ -31,4 +37,7 @@
     group: "{{ local_user_groupname }}"
     content: "{{ ssh_private_key }}"
     dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa"
-  when: copy_ssh_privkey|default(True)
+  when:
+    - copy_ssh_privkey|default(True)
+    - ssh_private_key is defined
+    - ssh_private_key != None
