@@ -1,0 +1,9 @@
+---
+- name: Install apps from Mac App Store
+  mas:
+    id: "{{ item.id }}"
+    state: present
+    upgrade_all: yes
+  loop: "{{ mac_app_store_packages }}"
+  loop_control:
+    label: "{{ item.name }}"
