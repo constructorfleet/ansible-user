@@ -3,34 +3,33 @@
   include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Configure Shell
-  include_tasks:
+  import_tasks:
     file: shell.yml
-    apply:
-      tags:
-        - shell
-  tags: shell
+  tags:
+    - shell
 
 - name: Configure SSH
-  include_tasks:
+  import_tasks:
     file: ssh.yml
-    apply:
-      tags:
-        - ssh_config
-  tags: ssh_config
+  tags:
+    - ssh_config
 
 - name: Setup .rc Files
-  include_tasks:
+  import_tasks:
     file: rc_files.yml
-    apply:
-      tags:
-        - rcfiles
-  tags: rcfiles
+  tags:
+    - rcfiles
 
 - name: Install homebrew packages
-  include_tasks:
+  import_tasks:
     file: homebrew.yml
-    apply:
-      tags:
-        - homebrew
-  tags: homebrew
+  tags:
+    - homebrew
+  when: ansible_os_family == "Darwin"
+
+- name: Install applications from Mac App Store
+  import_tasks:
+    file: mas.yml
+  tags:
+    - mas
   when: ansible_os_family == "Darwin"

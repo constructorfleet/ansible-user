@@ -8,6 +8,8 @@ homebrew_brew_bin_path: /usr/local/bin
 local_username: "{{ ansible_env.USER }}"
 local_user_shell: /bin/zsh
 
+mac_app_store_packages: []
+
 homebrew_common_packages:
   - ssh-copy-id
   - jq
@@ -19,6 +21,10 @@ homebrew_common_packages:
   - tmux
   - screen
   - python
+  - pyenv
+  - pyenv-virtualenv
+  - pyenv-ccache
+  - pyenv-pip-migrate
   - git
   - nmap
   - lftp
@@ -28,6 +34,7 @@ homebrew_common_packages:
   - p7zip
   - minicom
   - coreutils
+  - mas
 
 homebrew_user_packages: []
 
@@ -46,16 +53,14 @@ homebrew_cask_common_packages:
   - synergy
   - osxfuse
   - google-chrome
+  - firefox
   - slack
   - signal
-  - spotify
   - sublime-text
   - xquartz
-  - virtualbox
   - java
-  - fluid
   - viscosity
-  - divvy
+  - moom
   - iterm2
   - font-hack-nerd-font-mono
   - font-hack-nerd-font
