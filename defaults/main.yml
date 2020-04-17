@@ -13,7 +13,7 @@ mas_password: ""
 mas_upgrade_all_apps: false
 mas_signin_dialog: false
 
-mac_app_store_packages: []
+mac_app_store_packages:
 
 homebrew_common_packages:
   - ssh-copy-id
@@ -28,8 +28,8 @@ homebrew_common_packages:
   - python
   - pyenv
   - pyenv-virtualenv
-  - pyenv-ccache
   - pyenv-pip-migrate
+  - pyenv-ccache
   - git
   - nmap
   - lftp
@@ -41,9 +41,9 @@ homebrew_common_packages:
   - coreutils
   - mas
 
-homebrew_user_packages: []
+homebrew_user_packages:
 
-homebrew_uninstalled_packages: []
+homebrew_uninstalled_packages:
 
 homebrew_upgrade_all_packages: no
 
@@ -78,9 +78,9 @@ homebrew_cask_common_packages:
   - font-anonymouspro-nerd-font
   - font-anonymous-pro
 
-homebrew_cask_user_packages: []
+homebrew_cask_user_packages:
 
-homebrew_cask_uninstalled_packages: []
+homebrew_cask_uninstalled_packages:
 
 homebrew_cask_appdir: /Applications
 
