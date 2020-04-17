@@ -25,8 +25,6 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
-    recurse: yes
-    mode: 0775
   become: yes
 
 # Clone Homebrew.
@@ -39,7 +37,7 @@
     umask: "0000"
     accept_hostkey: yes
     depth: 1
-  become: yes
+  become: no
 
 - name: Ensure proper permissions and ownership on Homebrew repo.
   file:
@@ -47,30 +45,28 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
-    recurse: yes
-    mode: 0775
-  become: yes
+  become: no
 
-# Adjust Homebrew permissions.
-- name: Ensure proper permissions and ownership on homebrew_brew_bin_path dirs.
-  file:
-    path: "{{ homebrew_brew_bin_path }}"
-    state: directory
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    recurse: yes
-    mode: 0775
-  become: yes
-
-- name: Ensure proper ownership on homebrew_install_path subdirs.
-  file:
-    path: "{{ homebrew_install_path }}"
-    state: directory
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    recurse: yes
-    mode: 0775
-  become: yes
+## Adjust Homebrew permissions.
+#- name: Ensure proper permissions and ownership on homebrew_brew_bin_path dirs.
+#  file:
+#    path: "{{ homebrew_brew_bin_path }}"
+#    state: directory
+#    owner: "{{ local_username }}"
+#    group: "{{ local_user_groupname }}"
+#    recurse: yes
+#    mode: 0775
+#  become: yes
+#
+#- name: Ensure proper ownership on homebrew_install_path subdirs.
+#  file:
+#    path: "{{ homebrew_install_path }}"
+#    state: directory
+#    owner: "{{ local_username }}"
+#    group: "{{ local_user_groupname }}"
+#    recurse: yes
+#    mode: 0775
+#  become: yes
 
 # Place brew binary in proper location and complete setup.
 - name: Check if homebrew binary is already in place.
@@ -88,30 +84,30 @@
   when: not homebrew_binary.stat.exists
   become: yes
 
-- name: Ensure proper homebrew folders are in place.
-  file:
-    path: "{{ homebrew_prefix }}/{{ item }}"
-    state: directory
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    mode: 0775
-    recurse: yes
-  become: yes
-  with_items:
-    - Cellar
-    - Homebrew
-    - Frameworks
-    - Caskroom
-    - bin
-    - etc
-    - include
-    - lib
-    - opt
-    - sbin
-    - share
-    - share/zsh
-    - share/zsh/site-functions
-    - var
+#- name: Ensure proper homebrew folders are in place.
+#  file:
+#    path: "{{ homebrew_prefix }}/{{ item }}"
+#    state: directory
+#    owner: "{{ local_username }}"
+#    group: "{{ local_user_groupname }}"
+#    mode: 0775
+#    recurse: yes
+#  become: yes
+#  with_items:
+#    - Cellar
+#    - Homebrew
+#    - Frameworks
+#    - Caskroom
+#    - bin
+#    - etc
+#    - include
+#    - lib
+#    - opt
+#    - sbin
+#    - share
+#    - share/zsh
+#    - share/zsh/site-functions
+#    - var
 
 - name: Force update brew after installation.
   command: "{{ homebrew_brew_bin_path }}/brew update --force"
@@ -130,70 +126,41 @@
     - homebrew_taps != None
 
 # Cask.
+- set_fact:
+    homebrew_cask_packages: "{{ (homebrew_cask_common_packages + homebrew_cask_user_packages) | unique }}"
+
 - name: Install configured cask applications.
   homebrew_cask:
-    name: "{{ item }}"
+    name: "{{ homebrew_cask_packages }}"
     state: present
     install_options: "appdir={{ homebrew_cask_appdir }}"
-  with_items: "{{ homebrew_cask_common_packages }}"
   become: no
   ignore_errors: true
-  when:
-    - homebrew_cask_common_packages is defined
-    - homebrew_cask_common_packages != None
-
-- name: Install user-specific cask applications.
-  homebrew_cask:
-    name: "{{ item }}"
-    state: present
-    install_options: "appdir={{ homebrew_cask_appdir }}"
-  with_items: "{{ homebrew_cask_user_packages }}"
-  become: no
-  ignore_errors: true
-  when:
-    - homebrew_cask_user_packages is defined
-    - homebrew_cask_user_packages != None
 
 - name: Ensure blacklisted cask applications are not installed.
   homebrew_cask:
-    name: "{{ item }}"
+    name: "{{ homebrew_cask_uninstalled_packages }}"
     state: absent
-  with_items: "{{ homebrew_cask_uninstalled_packages }}"
   become: no
   when:
-    - homebrew_common_packages is defined
-    - homebrew_common_packages != None
+    - homebrew_cask_uninstalled_packages is defined
+    - homebrew_cask_uninstalled_packages != None
 
 # Brew.
+- set_fact:
+    homebrew_packages: "{{ (homebrew_common_packages + homebrew_user_packages) | unique }}"
+
 - name: Ensure configured homebrew packages are installed.
   homebrew:
-    name: "{{ item.name | default(item) }}"
-    install_options: "{{ item.install_options | default(omit) }}"
+    name: "{{ homebrew_packages }}"
     state: present
-  with_items: "{{ homebrew_common_packages }}"
   become: no
   ignore_errors: true
-  when:
-    - homebrew_common_packages is defined
-    - homebrew_common_packages != None
-
-- name: Install user-specific homebrew packages.
-  homebrew:
-    name: "{{ item.name | default(item) }}"
-    install_options: "{{ item.install_options | default(omit) }}"
-    state: present
-  with_items: "{{ homebrew_user_packages }}"
-  become: no
-  ignore_errors: true
-  when:
-    - homebrew_uninstalled_packages is defined
-    - homebrew_uninstalled_packages != None
 
 - name: Ensure blacklisted homebrew packages are not installed.
   homebrew:
-    name: "{{ item }}"
+    name: "{{ homebrew_uninstalled_packages }}"
     state: absent
-  with_items: "{{ homebrew_uninstalled_packages }}"
   become: no
   when:
     - homebrew_uninstalled_packages is defined
