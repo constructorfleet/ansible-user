@@ -6,7 +6,7 @@
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.vim/"
+    dest: "{{ user_home_directory }}/.vim/"
 
 - name: Copy vimrc
   copy:
@@ -14,7 +14,7 @@
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.vimrc"
+    dest: "{{ user_home_directory }}/.vimrc"
 
 - name: Copy screenrc
   copy:
@@ -22,12 +22,12 @@
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.screenrc"
+    dest: "{{ user_home_directory }}/.screenrc"
 
 - name: Create git-aware-prompt directory in user home directory
   file:
     state: directory
-    path: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt"
+    path: "{{ user_home_directory }}/.bash/git-aware-prompt"
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     mode: 0775
@@ -40,7 +40,7 @@
     mode: 0755
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash/git-aware-prompt/{{ item }}"
+    dest: "{{ user_home_directory }}/.bash/git-aware-prompt/{{ item }}"
   with_items:
     - colors.sh
     - main.sh
@@ -54,7 +54,7 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ bash_profile }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.bash_profile"
+    dest: "{{ user_home_directory }}/.bash_profile"
   when:
     - local_user_shell is search('bash')
     - bash_profile is defined
@@ -63,7 +63,7 @@
 - name: Check out oh-my-zsh
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh"
+    dest: "{{ user_home_directory }}/.oh-my-zsh"
     version: master
     update: no
   when:
@@ -72,7 +72,7 @@
 - name: Check out Powerlevel 10k Profile
   git:
     repo: https://github.com/romkatv/powerlevel10k.git
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    dest: "{{ user_home_directory }}/.oh-my-zsh/custom/themes/powerlevel10k"
     version: master
     update: no
   when:
@@ -84,7 +84,7 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ zshrc }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.zshrc"
+    dest: "{{ user_home_directory }}/.zshrc"
   when:
     - local_user_shell is search('zsh')
     - zshrc is defined
@@ -96,7 +96,7 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ p10krc }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.p10k.zsh"
+    dest: "{{ user_home_directory }}/.p10k.zsh"
   when:
     - local_user_shell is search('zsh')
     - p10krc is defined
@@ -108,7 +108,7 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ git_config }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.gitconfig"
+    dest: "{{ user_home_directory }}/.gitconfig"
   when:
     - git_config is defined
     - git_config != None
