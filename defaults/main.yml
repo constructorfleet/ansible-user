@@ -68,7 +68,7 @@ homebrew_cask_common_packages:
   - moom
   - iterm2
   - font-hack-nerd-font
-  - font-sourcecodepro-nerd-font
+  - font-saucecodepro-nerd-font
   - font-source-code-pro
   - font-meslo-nerd-font
   - font-anonymice-nerd-font
