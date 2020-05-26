@@ -67,12 +67,6 @@ homebrew_cask_common_packages:
   - viscosity
   - moom
   - iterm2
-  - font-hack-nerd-font
-  - font-saucecodepro-nerd-font
-  - font-source-code-pro
-  - font-meslolg-nerd-font
-  - font-anonymice-nerd-font
-  - font-anonymous-pro
 
 homebrew_cask_user_packages:
 
