@@ -39,6 +39,7 @@ homebrew_common_packages:
   - p7zip
   - minicom
   - coreutils
+  - java
   - mas
 
 homebrew_user_packages:
@@ -63,7 +64,6 @@ homebrew_cask_common_packages:
   - signal
   - sublime-text
   - xquartz
-  - java
   - viscosity
   - moom
   - iterm2
