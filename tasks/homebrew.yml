@@ -125,6 +125,10 @@
     - homebrew_taps is defined
     - homebrew_taps != None
 
+- name: Execute any commands prior to installing homebrew packages
+  command: "{{ item }}"
+  loop: "{{ (pre_brew_install_scripts | default([])) | list"
+
 # Cask.
 - set_fact:
     homebrew_cask_packages: "{{ (homebrew_cask_common_packages + homebrew_cask_user_packages) | unique }}"
