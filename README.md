@@ -21,6 +21,9 @@ homebrew_brew_bin_path: /usr/local/bin
 # local user for homebrew and config files (if running ansible as another user)
 local_username: "{{ ansible_user_id }}"
 
+pre_brew_install_scripts:
+  - xcode-select --install
+
 # packages installed by default
 homebrew_common_packages:
   - ssh-copy-id
