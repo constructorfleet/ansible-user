@@ -134,15 +134,12 @@
     homebrew_cask_packages: "{{ (homebrew_cask_common_packages + homebrew_cask_user_packages) | unique }}"
 
 - name: Install configured cask applications.
-  block:
-    - name: Install configured cask applications.
-      homebrew_cask:
-        name: "{{ item }}"
-        state: present
-        install_options: "appdir={{ homebrew_cask_appdir }}"
-      become: no
-      ignore_errors: true
-  loop: homebrew_cask_packages
+  homebrew_cask:
+    name: "{{ homebrew_cask_packages }}"
+    state: present
+    install_options: "appdir={{ homebrew_cask_appdir }}"
+  become: no
+  ignore_errors: true
 
 - name: Ensure blacklisted cask applications are not installed.
   homebrew_cask:
@@ -153,19 +150,16 @@
     - homebrew_cask_uninstalled_packages is defined
     - homebrew_cask_uninstalled_packages != None
 
-
+# Brew.
 - set_fact:
     homebrew_packages: "{{ (homebrew_common_packages + homebrew_user_packages) | unique }}"
 
 - name: Ensure configured homebrew packages are installed.
-  block:
-    - name: Ensure configuVred homebrew packages are installed.
-      homebrew:
-        name: "{{ item }}"
-        state: present
-      become: no
-      ignore_errors: true
-  loop: homebrew_packages
+  homebrew:
+    name: "{{ homebrew_packages }}"
+    state: present
+  become: no
+  ignore_errors: true
 
 - name: Ensure blacklisted homebrew packages are not installed.
   homebrew:
