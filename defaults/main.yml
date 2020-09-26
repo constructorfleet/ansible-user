@@ -13,8 +13,7 @@ mas_password: ""
 mas_upgrade_all_apps: false
 mas_signin_dialog: false
 
-mac_app_store_packages:
-  - moom
+mas_packages: []
 
 pre_brew_install_scripts: []
 
