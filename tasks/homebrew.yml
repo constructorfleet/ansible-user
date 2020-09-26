@@ -127,7 +127,7 @@
 
 - name: Execute any commands prior to installing homebrew packages
   command: "{{ item }}"
-  loop: "{{ (pre_brew_install_scripts | default([])) | list"
+  loop: "{{ (pre_brew_install_scripts | default([])) | list }}"
 
 # Cask.
 - set_fact:
