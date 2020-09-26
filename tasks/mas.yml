@@ -44,7 +44,9 @@
   loop: "{{ mas_packages }}"
   loop_control:
     label: "{{ item.name }}"
-  when: (item.id | default(item) | string) not in mas_list.stdout
+  when:
+    - mas_packages is defined and mas_packages != None
+    - (item.id | default(item) | string) not in mas_list.stdout
 
 - name: Upgrade all apps (if configured).
   command: /usr/local/bin/mas upgrade
