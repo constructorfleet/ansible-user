@@ -1,0 +1,6 @@
+.idea
+collections/*
+!collections/requirements.y*ml
+roles/*
+!roles/requirements.y*ml
+venv
