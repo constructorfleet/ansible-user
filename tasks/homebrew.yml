@@ -135,9 +135,10 @@
 
 - name: Install configured cask applications.
   homebrew_cask:
-    name: "{{ homebrew_cask_packages }}"
+    name: "{{ item }}"
     state: present
     install_options: "appdir={{ homebrew_cask_appdir }}"
+  loop: "{{ homebrew_cask_packages }}"
   become: no
   ignore_errors: true
 
