@@ -37,7 +37,6 @@ homebrew_common_packages:
   - lftp
   - ipmitool
   - ansible
-  - unrar
   - p7zip
   - minicom
   - coreutils
