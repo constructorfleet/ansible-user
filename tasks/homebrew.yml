@@ -73,16 +73,16 @@
   stat: "path={{ homebrew_brew_bin_path }}/brew"
   register: homebrew_binary
 
-- name: Symlink brew to homebrew_brew_bin_path.
-  file:
-    src: "{{ homebrew_install_path }}/bin/brew"
-    dest: "{{ homebrew_brew_bin_path }}/brew"
-    state: link
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    mode: 0775
-  when: not homebrew_binary.stat.exists
-  become: yes
+#- name: Symlink brew to homebrew_brew_bin_path.
+#  file:
+#    src: "{{ homebrew_install_path }}/bin/brew"
+#    dest: "{{ homebrew_brew_bin_path }}/brew"
+#    state: link
+#    owner: "{{ local_username }}"
+#    group: "{{ local_user_groupname }}"
+#    mode: 0775
+#  when: not homebrew_binary.stat.exists
+#  become: yes
 
 #- name: Ensure proper homebrew folders are in place.
 #  file:
