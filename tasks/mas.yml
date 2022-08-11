@@ -5,14 +5,14 @@
     state: present
 
 - name: Get MAS account status
-  command: /usr/local/bin/mas account
+  command: "{{ homebrew_brew_bin_path }}/mas account"
   register: mas_account_result
   failed_when: mas_account_result.rc > 1
   check_mode: false
   changed_when: false
 
 - name: Sign in to MAS when email and password are provided.
-  command: '/usr/local/bin/mas signin "{{ mas_email }}" "{{ mas_password }}"'
+  command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}"'
   register: mas_signin_result
   when:
     - mas_account_result.rc == 1
@@ -21,7 +21,7 @@
     - not mas_signin_dialog
 
 - name: Sign in to MAS when email is provided, and complete password and 2FA using dialog.
-  command: '/usr/local/bin/mas signin "{{ mas_email }}" "{{ mas_password }}" --dialog'
+  command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}" --dialog'
   register: mas_signin_result
   when:
     - mas_signin_dialog
@@ -29,7 +29,7 @@
     - mas_email | bool
 
 - name: List installed MAS apps.
-  command: /usr/local/bin/mas list
+  command: "{{ homebrew_brew_bin_path }}/mas list"
   register: mas_list
   check_mode: false
   changed_when: false
@@ -40,7 +40,7 @@
     verbosity: 1
 
 - name: Ensure configured MAS apps are installed.
-  command: /usr/local/bin/mas install "{{ item.id|default(item) }}"
+  command: "{{ homebrew_brew_bin_path }}/mas install {{ item.id|default(item) }}"
   loop: "{{ mas_packages }}"
   loop_control:
     label: "{{ item.name }}"
@@ -49,5 +49,5 @@
     - (item.id | default(item) | string) not in mas_list.stdout
 
 - name: Upgrade all apps (if configured).
-  command: /usr/local/bin/mas upgrade
+  command: "{{ homebrew_brew_bin_path }}/mas upgrade"
   when: mas_upgrade_all_apps
