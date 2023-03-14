@@ -3,14 +3,18 @@
   command:
     cmd: "id -g -nr {{ local_username }}"
   register: target_user_group
+  changed_when: no
 
 - set_fact:
     local_user_groupname: "{{ target_user_group.stdout }}"
+  changed_when: no
 
 - name: Get home directory for local user
   shell:
     cmd: "env -u {{ local_username }} -v | grep -w HOME | cut -d '=' -f2"
   register: target_user_home
+  changed_when: no
 
 - set_fact:
     user_home_directory: "{{ target_user_home.stdout }}"
+  changed_when: no
