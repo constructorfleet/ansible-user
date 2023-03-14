@@ -1,31 +1,10 @@
----
-# Homebrew setup prerequisites.
-#- name: Ensure Homebrew parent directory has correct permissions (on High Sierra).
-#  file:
-#    path: "{{ homebrew_prefix }}"
-#    owner: "{{ local_username }}"
-#    state: directory
-#    mode: 2775
-#  become: yes
-#  when: "ansible_distribution_version.startswith('10.13')"
-#
-#- name: Ensure Homebrew parent directory has correct permissions (on non-'High Sierra' versions of Mac OS X).
-#  file:
-#    path: "{{ homebrew_prefix }}"
-#    owner: "{{ local_username }}"
-#    group: "{{ local_user_groupname }}"
-#    state: directory
-#    mode: 2775
-#  become: yes
-#  when: "not ansible_distribution_version.startswith('10.13')"
-
 - name: Ensure Homebrew directory exists.
   file:
     path: "{{ homebrew_install_path }}"
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
-  become: yes
+  become: true
 
 # Clone Homebrew.
 - name: Ensure Homebrew is installed.
@@ -33,11 +12,11 @@
     repo: "{{ homebrew_repo }}"
     version: master
     dest: "{{ homebrew_install_path }}"
-    update: no
+    update: false
     umask: "0000"
-    accept_hostkey: yes
+    accept_hostkey: true
     depth: 1
-  become: no
+  become: false
 
 - name: Ensure proper permissions and ownership on Homebrew repo.
   file:
@@ -45,85 +24,28 @@
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     state: directory
-  become: no
-
-## Adjust Homebrew permissions.
-#- name: Ensure proper permissions and ownership on homebrew_brew_bin_path dirs.
-#  file:
-#    path: "{{ homebrew_brew_bin_path }}"
-#    state: directory
-#    owner: "{{ local_username }}"
-#    group: "{{ local_user_groupname }}"
-#    recurse: yes
-#    mode: 0775
-#  become: yes
-#
-#- name: Ensure proper ownership on homebrew_install_path subdirs.
-#  file:
-#    path: "{{ homebrew_install_path }}"
-#    state: directory
-#    owner: "{{ local_username }}"
-#    group: "{{ local_user_groupname }}"
-#    recurse: yes
-#    mode: 0775
-#  become: yes
+  become: false
 
 # Place brew binary in proper location and complete setup.
 - name: Check if homebrew binary is already in place.
   stat: "path={{ homebrew_brew_bin_path }}/brew"
   register: homebrew_binary
 
-#- name: Symlink brew to homebrew_brew_bin_path.
-#  file:
-#    src: "{{ homebrew_install_path }}/bin/brew"
-#    dest: "{{ homebrew_brew_bin_path }}/brew"
-#    state: link
-#    owner: "{{ local_username }}"
-#    group: "{{ local_user_groupname }}"
-#    mode: 0775
-#  when: not homebrew_binary.stat.exists
-#  become: yes
-
-#- name: Ensure proper homebrew folders are in place.
-#  file:
-#    path: "{{ homebrew_prefix }}/{{ item }}"
-#    state: directory
-#    owner: "{{ local_username }}"
-#    group: "{{ local_user_groupname }}"
-#    mode: 0775
-#    recurse: yes
-#  become: yes
-#  with_items:
-#    - Cellar
-#    - Homebrew
-#    - Frameworks
-#    - Caskroom
-#    - bin
-#    - etc
-#    - include
-#    - lib
-#    - opt
-#    - sbin
-#    - share
-#    - share/zsh
-#    - share/zsh/site-functions
-#    - var
-
 - name: Force update brew after installation.
   command: "{{ rosetta_cmd|default('') }}{{ homebrew_brew_bin_path }}/brew update --force"
   when: not homebrew_binary.stat.exists
-  become: no
+  become: false
 
-# Tap.
+# Taps.
 - name: Ensure configured taps are tapped.
-  homebrew_tap:
-    tap: "{{ item }}"
+  community.general.homebrew_tap:
+    tap: "{{ homebrew_taps }}"
     state: present
-  with_items: "{{ homebrew_taps }}"
-  become: no
+  become: false
   when:
-    - homebrew_taps is defined
-    - homebrew_taps != None
+    - homebrew_taps | length > 0
+  
+  
 
 - name: Execute any commands prior to installing homebrew packages
   command: "{{ item }}"
@@ -133,20 +55,21 @@
 - set_fact:
     homebrew_cask_packages: "{{ (homebrew_cask_common_packages + homebrew_cask_user_packages) | unique }}"
 
-- name: Install configured cask applications.
-  shell:
-    cmd: "{{ rosetta_cmd|default('') }}{{ homebrew_brew_bin_path }}/brew install --cask {{ item }}"
-  loop: "{{ homebrew_cask_packages }}"
-  become: no
-  ignore_errors: true
-
-- name: Ensure blacklisted cask applications are not installed.
-  shell:
-    cmd: "{{ rosetta_cmd|default('') }}{{ homebrew_brew_bin_path }}/brew uninstall --cask {{ item }}"
-  become: no
+- name: Install configured cask applications
+  community.general.homebrew_cask:
+    name: "{{ homebrew_cask_packages }}"
+    state: present
+    accept_external_apps: true
   when:
-    - homebrew_cask_uninstalled_packages is defined
-    - homebrew_cask_uninstalled_packages != None
+    - homebrew_cask_packages | length > 0
+
+- name: Ensure blacklisted cask applicatons are removed
+  community.general.homebrew_cask:
+    name: "{{ homebrew_cask_uninstalled_packages }}"
+    state: absent
+    accept_external_apps: true
+  when:
+    - homebrew_cask_uninstalled_packages | length > 0
 
 # Brew.
 - set_fact:
@@ -156,24 +79,24 @@
   homebrew:
     name: "{{ homebrew_packages }}"
     state: present
-  become: no
-  ignore_errors: true
+  become: false
+  when:
+    - homebrew_packages | length > 0
 
 - name: Ensure blacklisted homebrew packages are not installed.
   homebrew:
     name: "{{ homebrew_uninstalled_packages }}"
     state: absent
-  become: no
+  become: false
   when:
-    - homebrew_uninstalled_packages is defined
-    - homebrew_uninstalled_packages != None
+    - homebrew_uninstalled_packages | length > 0
 
 - name: Upgrade all homebrew packages (if configured).
   homebrew:
     update_homebrew: yes
     upgrade_all: yes
   when: homebrew_upgrade_all_packages
-  become: no
+  become: false
 
 - name: Check for Brewfile.
   stat:
@@ -183,4 +106,4 @@
 - name: Install from Brewfile.
   command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
   when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
-  become: no
+  become: false
