@@ -42,9 +42,9 @@ homebrew_common_packages:
   - java
   - mas
 
-homebrew_user_packages:
+homebrew_user_packages: []
 
-homebrew_uninstalled_packages:
+homebrew_uninstalled_packages: []
 
 homebrew_upgrade_all_packages: no
 
@@ -65,9 +65,9 @@ homebrew_cask_common_packages:
   - viscosity
   - iterm2
 
-homebrew_cask_user_packages:
+homebrew_cask_user_packages: []
 
-homebrew_cask_uninstalled_packages:
+homebrew_cask_uninstalled_packages: []
 
 homebrew_cask_appdir: /Applications
 
