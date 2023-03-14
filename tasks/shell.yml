@@ -1,4 +1,5 @@
 ---
 - name: Set user shell account
   command: "chsh -s {{ local_user_shell }} {{ local_username }}" # noqa 301
-  become: yes
+  become: true
+  changed_when: false
