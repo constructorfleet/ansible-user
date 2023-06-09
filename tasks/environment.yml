@@ -1,20 +1,22 @@
 ---
 - name: Get current user primary group
-  command:
+  ansible.builtin.command:
     cmd: "id -g -nr {{ local_username }}"
   register: target_user_group
-  changed_when: no
+  changed_when: false
+  become: false
 
-- set_fact:
+- name: Set group for local user
+  ansible.builtin.set_fact:
     local_user_groupname: "{{ target_user_group.stdout }}"
-  changed_when: no
+  changed_when: false
 
-- name: Get home directory for local user
-  shell:
-    cmd: "env -u {{ local_username }} -v | grep -w HOME | cut -d '=' -f2"
-  register: target_user_home
-  changed_when: no
+# - name: Get home directory for local user
+#   shell:
+#     cmd: "env -u {{ local_username }} -v | grep -w HOME | cut -d '=' -f2"
+#   register: target_user_home
+#   changed_when: no
 
-- set_fact:
-    user_home_directory: "{{ target_user_home.stdout }}"
-  changed_when: no
+# - set_fact:
+#     user_home_directory: "{{local_user_homedir }}"
+#   changed_when: no

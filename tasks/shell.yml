@@ -1,5 +1,21 @@
 ---
-- name: Set user shell account
-  command: "chsh -s {{ local_user_shell }} {{ local_username }}" # noqa 301
-  become: true
-  changed_when: false
+# - name: Set user shell account
+#   command: "chsh -s {{ local_user_shell }}"  # noqa 301
+#   changed_when: false
+#   become: false
+
+# - name: Check user sudo privileges
+#   command: "sudo -v"
+#   register: sudo_privs_result
+#   ignore_errors: true
+#   changed_when: false
+
+# - name: Print sudo results
+#   debug:
+#     var: sudo_privs_result
+#     verbosity: 1
+
+# - name: Set sudo privs flag
+#   set_fact:
+#     user_has_sudo: True
+#   when: sudo_privs_result is succeeded

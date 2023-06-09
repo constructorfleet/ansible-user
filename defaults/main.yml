@@ -1,12 +1,15 @@
 ---
 homebrew_repo: https://github.com/Homebrew/brew
 
-homebrew_prefix: /usr/local
-homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
-homebrew_brew_bin_path: "{{ homebrew_install_path }}/bin/"
-
 local_username: "{{ ansible_env.USER }}"
 local_user_shell: /bin/zsh
+local_user_homedir: "{{ ansible_env.HOME }}"
+
+homebrew_prefix: "/opt"
+homebrew_nosudo_prefix: "{{ local_user_homedir }}"
+homebrew_install_path: "{{ homebrew_prefix }}/homebrew"
+homebrew_brew_bin_path: "{{ homebrew_install_path }}/bin/"
+
 
 mas_email: ""
 mas_password: ""
@@ -46,7 +49,7 @@ homebrew_user_packages: []
 
 homebrew_uninstalled_packages: []
 
-homebrew_upgrade_all_packages: no
+homebrew_upgrade_all_packages: false
 
 homebrew_taps:
   - homebrew/core
@@ -66,7 +69,6 @@ homebrew_cask_common_packages:
   - iterm2
 
 homebrew_cask_user_packages: []
-
 homebrew_cask_uninstalled_packages: []
 
 homebrew_cask_appdir: /Applications

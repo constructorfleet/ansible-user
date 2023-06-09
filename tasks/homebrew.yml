@@ -1,109 +1,192 @@
-- name: Ensure Homebrew directory exists.
-  file:
-    path: "{{ homebrew_install_path }}"
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    state: directory
-  become: true
+- name: Install xcode cli utils
+  block:
+    - name: Install xcode cli utilities
+      ansible.builtin.command:
+        cmd: "xcode-select --install"
+        creates: /usr/bin/gcc
+      become: false
+      register: xcode_cli_install
+    - name: Print xcode cli installation results
+      ansible.builtin.debug:
+        msg: "{{ xcode_cli_install }}"
+        verbosity: 1
+    - name: Accept xcode license
+      ansible.builtin.command:
+        cmd: "xcodebuild -license accept"
+      become: true
+      register: xcode_license_accept
+      when:
+        - user_has_sudo|default(False)
+      changed_when:
+        - xcode_license_accept.changed
+    - name: Print xcode licence result
+      ansible.builtin.debug:
+        msg: "{{ xcode_license_accept }}"
+        verbosity: 1
+      when:
+        - user_has_sudo|default(False)
 
-# Clone Homebrew.
-- name: Ensure Homebrew is installed.
-  git:
-    repo: "{{ homebrew_repo }}"
-    version: master
-    dest: "{{ homebrew_install_path }}"
-    update: false
-    umask: "0000"
-    accept_hostkey: true
-    depth: 1
-  become: false
 
-- name: Ensure proper permissions and ownership on Homebrew repo.
-  file:
-    path: "{{ homebrew_install_path }}"
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    state: directory
-  become: false
+- name: Install Homebrew
+  when:
+    - not user_has_sudo|default(False)
+  block:
+    - name: Create local homebrew directory
+      ansible.builtin.file:
+        path: "{{ homebrew_install_path }}"
+        owner: "{{ local_username }}"
+        group: "{{ local_user_groupname }}"
+        state: directory
+        mode: '0644'
+    - name: Install Homebrew
+      ansible.builtin.shell:
+        cmd: |
+          "curl -L {{ homebrew_repo }}brew/tarball/master"
+          "tar xz --strip 1 -C homebrew"
+        chdir: "{{ homebrew_install_path }}"
+        creates: "{{ homebrew_brew_bin_path }}"
+      register: homebrew_install
+
+
+- name: Install Homebrew
+  when:
+    - user_has_sudo|default(False)
+  block:
+    - name: Download Homebrew
+      ansible.builtin.shell:
+        cmd: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        executable: /bin/bash
+        creates: "{{ homebrew_install_path }}"
+      register: homebrew_install
+      become: true
+
+- name: Print homebrew installation results
+  ansible.builtin.debug:
+    msg: "{{ homebrew_install }}"
+    verbosity: 1
+
+- name: Check if homebrew binary is already in place.
+  ansible.builtin.stat:
+    path: "{{ homebrew_brew_bin_path }}/brew"
+  register: homebrew_binary_stat
+  when:
+    - homebrew_install is succeeded
+
+- name: Show homebrew binary stat result
+  ansible.builtin.debug:
+    msg: "{{ homebrew_binary_stat }}"
+    verbosity: 1
+
+# - name: Install xcode
+
+# - name: Ensure Homebrew directory exists.
+#   ansible.builtin.file:
+#     path: "{{ homebrew_install_path }}"
+#     owner: "{{ local_username }}"
+#     group: "{{ local_user_groupname }}"
+#     state: directory
+
+# # Clone Homebrew.
+# - name: Ensure Homebrew is installed.
+#   git:
+#     repo: "{{ homebrew_repo }}"
+#     version: master
+#     dest: "{{ homebrew_install_path }}"
+#     update: false
+#     umask: "0000"
+#     accept_hostkey: true
+#     depth: 1
+
+# - name: Ensure proper permissions and ownership on Homebrew repo.
+#   file:
+#     path: "{{ homebrew_install_path }}"
+#     owner: "{{ local_username }}"
+#     group: "{{ local_user_groupname }}"
+#     state: directory
 
 # Place brew binary in proper location and complete setup.
 - name: Check if homebrew binary is already in place.
-  stat: "path={{ homebrew_brew_bin_path }}/brew"
+  ansible.builtin.stat:
+    path: "{{ homebrew_brew_bin_path }}/brew"
   register: homebrew_binary
 
-- name: Force update brew after installation.
-  command: "{{ rosetta_cmd|default('') }}{{ homebrew_brew_bin_path }}/brew update --force"
-  when: not homebrew_binary.stat.exists
-  become: false
+# - name: Force update brew after installation.
+#   command: "{{ rosetta_cmd|default('') }}{{ homebrew_brew_bin_path }}/brew update --force"
+#   when: not homebrew_binary.stat.exists
 
 # Taps.
 - name: Ensure configured taps are tapped.
-  community.general.homebrew_tap:
+  ansible.builtin.homebrew_tap:
     tap: "{{ homebrew_taps }}"
     state: present
-  become: false
   when:
     - homebrew_taps | length > 0
-  
-  
 
 - name: Execute any commands prior to installing homebrew packages
-  command: "{{ item }}"
-  loop: "{{ (pre_brew_install_scripts | default([])) | list }}"
-
+  ansible.builtin.command: "{{ item | default([]) }}"
+  loop: "{{ pre_brew_install_scripts }}"
+  when:
+    - pre_brew_install_scripts | length > 0
+  register: brew_preinstall
+  changed_when:
+    - brew_preinstall.changed
 # Cask.
-- set_fact:
+- name: Create list of cask packages
+  ansible.builtin.set_fact:
     homebrew_cask_packages: "{{ (homebrew_cask_common_packages + homebrew_cask_user_packages) | unique }}"
 
 - name: Install configured cask applications
-  community.general.homebrew_cask:
-    name: "{{ homebrew_cask_packages }}"
+  ansible.builtin.homebrew_cask:
+    name: "{{ homebrew_cask_packages | default([]) }}"
     state: present
     accept_external_apps: true
+    install_options: 'appdir=/$HOME/Applications'
   when:
     - homebrew_cask_packages | length > 0
 
 - name: Ensure blacklisted cask applicatons are removed
-  community.general.homebrew_cask:
-    name: "{{ homebrew_cask_uninstalled_packages }}"
+  ansible.builtin.homebrew_cask:
+    name: "{{ homebrew_cask_uninstalled_packages | default([]) }}"
     state: absent
     accept_external_apps: true
+    install_options: 'appdir=/$HOME/Applications,force'
   when:
     - homebrew_cask_uninstalled_packages | length > 0
 
 # Brew.
-- set_fact:
+- name: Create list of homebrew packages
+  ansible.builtin.set_fact:
     homebrew_packages: "{{ (homebrew_common_packages + homebrew_user_packages) | unique }}"
 
 - name: Ensure configured homebrew packages are installed.
-  homebrew:
-    name: "{{ homebrew_packages }}"
+  ansible.builtin.homebrew:
+    name: "{{ homebrew_packages | default([]) }}"
     state: present
-  become: false
   when:
     - homebrew_packages | length > 0
 
 - name: Ensure blacklisted homebrew packages are not installed.
-  homebrew:
-    name: "{{ homebrew_uninstalled_packages }}"
+  ansible.builtin.homebrew:
+    name: "{{ homebrew_uninstalled_packages | default([]) }}"
     state: absent
-  become: false
   when:
     - homebrew_uninstalled_packages | length > 0
 
+
 - name: Upgrade all homebrew packages (if configured).
-  homebrew:
-    update_homebrew: yes
-    upgrade_all: yes
+  ansible.builtin.homebrew:
+    update_homebrew: true
+    upgrade_all: true
   when: homebrew_upgrade_all_packages
-  become: false
 
 - name: Check for Brewfile.
-  stat:
+  ansible.builtin.stat:
     path: "{{ homebrew_brewfile_dir }}/Brewfile"
   register: homebrew_brewfile
 
 - name: Install from Brewfile.
-  command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
+  ansible.builtin.command: "brew bundle chdir={{ homebrew_brewfile_dir }}"
   when: homebrew_brewfile.stat.exists and homebrew_use_brewfile
-  become: false
+  register: install_brewfile
+  changed_when:
+    - install_brewfile.changed

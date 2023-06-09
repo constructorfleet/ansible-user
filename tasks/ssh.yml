@@ -1,42 +1,42 @@
 ---
 
 - name: Create .ssh directory if needed
-  file:
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh"
+  ansible.builtin.file:
+    dest: "{{ local_user_homedir }}/.ssh"
     state: directory
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    mode: 0744
+    mode: '0744'
 
 - name: Copy SSH Config
-  copy:
-    mode: 0755
+  ansible.builtin.copy:
+    mode: '0755'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ ssh_config }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/config"
+    dest: "{{ local_user_homedir }}/.ssh/config"
   when:
     - ssh_config is defined
     - ssh_config != None
 
 - name: Setup SSH Public Key
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ ssh_public_key }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa.pub"
+    dest: "{{ local_user_homedir }}/.ssh/id_rsa.pub"
   when:
     - ssh_public_key is defined
     - ssh_public_key != None
 
 - name: Setup SSH Private Key
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    content: "{{ ssh_private_key }}"
-    dest: "{{ user_homes_directory }}/{{ local_username }}/.ssh/id_rsa"
+    content: "{{ ssh_private_key | default('') }}"
+    dest: "{{ local_user_homedir }}/.ssh/id_rsa"
   when:
     - copy_ssh_privkey|default(True)
     - ssh_private_key is defined

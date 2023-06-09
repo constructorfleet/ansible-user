@@ -1,114 +1,114 @@
 ---
 
 - name: Copy vim config files
-  copy:
+  ansible.builtin.copy:
     src: vim/
-    mode: 0755
+    mode: '0755'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_home_directory }}/.vim/"
+    dest: "{{ local_user_homedir }}/.vim/"
 
 - name: Copy vimrc
-  copy:
+  ansible.builtin.copy:
     src: vimrc
-    mode: 0755
+    mode: '0755'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_home_directory }}/.vimrc"
+    dest: "{{ local_user_homedir }}/.vimrc"
 
 - name: Copy screenrc
-  copy:
+  ansible.builtin.copy:
     src: screenrc
-    mode: 0755
+    mode: '0755'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
-    dest: "{{ user_home_directory }}/.screenrc"
+    dest: "{{ local_user_homedir }}/.screenrc"
 
-- name: Create git-aware-prompt directory in user home directory
-  file:
-    state: directory
-    path: "{{ user_home_directory }}/.bash/git-aware-prompt"
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    mode: 0775
-  when:
-    - local_user_shell is search('bash')
+# - name: Create git-aware-prompt directory in user home directory
+#   file:
+#     state: directory
+#     path: "{{ local_user_homedir }}/.bash/git-aware-prompt"
+#     owner: "{{ local_username }}"
+#     group: "{{ local_user_groupname }}"
+#     mode: '0775'
+  # when:
+  #   - local_user_shell is search('bash')
 
-- name: Copy git-aware-profile files
-  copy:
-    src: "bash/git-aware-prompt/{{ item }}"
-    mode: 0755
-    owner: "{{ local_username }}"
-    group: "{{ local_user_groupname }}"
-    dest: "{{ user_home_directory }}/.bash/git-aware-prompt/{{ item }}"
-  with_items:
-    - colors.sh
-    - main.sh
-    - prompt.sh
-  when:
-    - local_user_shell is search('bash')
+# - name: Copy git-aware-profile files
+#   copy:
+#     src: "bash/git-aware-prompt/{{ item }}"
+#     mode: '0755'
+#     owner: "{{ local_username }}"
+#     group: "{{ local_user_groupname }}"
+#     dest: "{{ local_user_homedir }}/.bash/git-aware-prompt/{{ item }}"
+#   with_items:
+#     - colors.sh
+#     - main.sh
+#     - prompt.sh
+  # when:
+    # - local_user_shell is search('bash')
 
 - name: Copy bash_profile
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ bash_profile }}"
-    dest: "{{ user_home_directory }}/.bash_profile"
+    dest: "{{ local_user_homedir }}/.bash_profile"
   when:
-    - local_user_shell is search('bash')
+    # - local_user_shell is search('bash')
     - bash_profile is defined
     - bash_profile != None
 
 - name: Check out oh-my-zsh
-  git:
+  ansible.builtin.git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "{{ user_home_directory }}/.oh-my-zsh"
+    dest: "{{ local_user_homedir }}/.oh-my-zsh"
     version: master
-    update: no
+    update: false
   when:
     - local_user_shell is search('zsh')
 
 - name: Check out Powerlevel 10k Profile
-  git:
+  ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
-    dest: "{{ user_home_directory }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    dest: "{{ local_user_homedir }}/.oh-my-zsh/custom/themes/powerlevel10k"
     version: master
-    update: no
+    update: false
   when:
     - local_user_shell is search('zsh')
 
 - name: Copy .zshrc
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ zshrc }}"
-    dest: "{{ user_home_directory }}/.zshrc"
+    dest: "{{ local_user_homedir }}/.zshrc"
   when:
     - local_user_shell is search('zsh')
     - zshrc is defined
     - zshrc != None
 
 - name: Copy Powerlevel 10K Config
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ p10krc }}"
-    dest: "{{ user_home_directory }}/.p10k.zsh"
+    dest: "{{ local_user_homedir }}/.p10k.zsh"
   when:
     - local_user_shell is search('zsh')
     - p10krc is defined
     - p10krc != None
 
 - name: Copy git config
-  copy:
-    mode: 0600
+  ansible.builtin.copy:
+    mode: '0600'
     owner: "{{ local_username }}"
     group: "{{ local_user_groupname }}"
     content: "{{ git_config }}"
-    dest: "{{ user_home_directory }}/.gitconfig"
+    dest: "{{ local_user_homedir }}/.gitconfig"
   when:
     - git_config is defined
     - git_config != None

@@ -1,37 +1,37 @@
 ---
 - name: Load OS Variables
-  include_vars: "{{ ansible_os_family }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
   tags:
     - always
 
 - name: Get environment info
-  import_tasks: environment.yml
+  ansible.builtin.import_tasks: environment.yml
   tags:
     - always
 
 - name: Configure Shell
-  import_tasks: shell.yml
+  ansible.builtin.import_tasks: shell.yml
   tags:
     - shell
 
 - name: Configure SSH
-  import_tasks: ssh.yml
+  ansible.builtin.import_tasks: ssh.yml
   tags:
     - ssh_config
 
 - name: Setup .rc Files
-  import_tasks: rc_files.yml
+  ansible.builtin.import_tasks: rc_files.yml
   tags:
     - rcfiles
 
 - name: Install homebrew packages
-  import_tasks: homebrew.yml
+  ansible.builtin.import_tasks: homebrew.yml
   tags:
     - homebrew
   when: ansible_os_family == "Darwin"
 
 - name: Install applications from Mac App Store
-  import_tasks: mas.yml
+  ansible.builtin.import_tasks: mas.yml
   tags:
     - mas
   when: ansible_os_family == "Darwin"

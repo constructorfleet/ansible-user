@@ -4,50 +4,63 @@
     name: mas
     state: present
 
-- name: Get MAS account status
-  command: "{{ homebrew_brew_bin_path }}/mas account"
-  register: mas_account_result
-  failed_when: mas_account_result.rc > 1
-  check_mode: false
-  changed_when: false
+# - name: Get MAS account status
+#   command: "{{ homebrew_brew_bin_path }}/mas account"
+#   register: mas_account_result
+#   failed_when: mas_account_result.rc > 1
+#   check_mode: false
+#   changed_when: false
 
-- name: Sign in to MAS when email and password are provided.
-  command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}"'
-  register: mas_signin_result
-  when:
-    - mas_account_result.rc == 1
-    - mas_email | bool
-    - mas_password | bool
-    - not mas_signin_dialog
+# - name: Sign in to MAS when email and password are provided.
+#   command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}"'
+#   register: mas_signin_result
+#   when:
+#     - mas_account_result.rc == 1
+#     - mas_email | bool
+#     - mas_password | bool
+#     - not mas_signin_dialog
 
 - name: Sign in to MAS when email is provided, and complete password and 2FA using dialog.
-  command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}" --dialog'
+  ansible.builtin.command: '{{ homebrew_brew_bin_path }}/mas signin "{{ mas_email }}" "{{ mas_password }}" --dialog'
   register: mas_signin_result
   when:
     - mas_signin_dialog
     - mas_account_result.rc == 1
     - mas_email | bool
+  changed_when:
+    - mas_signin_result.changed
 
-- name: List installed MAS apps.
-  command: "{{ homebrew_brew_bin_path }}/mas list"
-  register: mas_list
-  check_mode: false
-  changed_when: false
+# - name: List installed MAS apps.
+#   command: "{{ homebrew_brew_bin_path }}/mas list"
+#   register: mas_list
+#   check_mode: false
+#   changed_when: false
 
-- name: print installed MAS apps
-  debug:
-    msg: "{{ mas_list.stdout }}"
-    verbosity: 1
+# - name: print installed MAS apps
+#   debug:
+#     msg: "{{ mas_list.stdout }}"
+#     verbosity: 1
 
-- name: Ensure configured MAS apps are installed.
-  command: "{{ homebrew_brew_bin_path }}/mas install {{ item.id|default(item) }}"
-  loop: "{{ mas_packages }}"
-  loop_control:
-    label: "{{ item.name }}"
-  when:
-    - mas_packages is defined and mas_packages != None
-    - (item.id | default(item) | string) not in mas_list.stdout
+# - name: Ensure configured MAS apps are installed.
+#   command: "{{ homebrew_brew_bin_path }}/mas install {{ item.id|default(item) }}"
+#   loop: "{{ mas_packages }}"
+#   loop_control:
+#     label: "{{ item.name }}"
+#   when:
+#     - mas_packages is defined and mas_packages != None
+#     - (item.id | default(item) | string) not in mas_list.stdout
 
-- name: Upgrade all apps (if configured).
-  command: "{{ homebrew_brew_bin_path }}/mas upgrade"
-  when: mas_upgrade_all_apps
+# - name: Upgrade all apps (if configured).
+#   command: "{{ homebrew_brew_bin_path }}/mas upgrade"
+#   when: mas_upgrade_all_apps
+
+- name: Upgrade all present App Store appliications via mas-cli
+  community.general.mas:
+    state: present
+    upgrade_all: true
+    id: "{{ item.id }}"
+  loop: "{{ mas_packages | default([]) }}"
+  when: mas_packages | length > 0
+- name: Install all configured App Store applications via mas-cli
+  community.general.mas:
+    upgrade_all: true
