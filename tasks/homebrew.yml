@@ -43,7 +43,8 @@
         owner: "{{ local_username }}"
         group: "{{ local_user_groupname }}"
         state: directory
-        mode: '0644'
+        mode: '2664'
+      become: true
     - name: Install Homebrew
       ansible.builtin.shell:
         cmd: |
@@ -64,7 +65,6 @@
         executable: /bin/bash
         creates: "{{ homebrew_install_path }}"
       register: homebrew_install
-      become: true
 
 - name: Print homebrew installation results
   ansible.builtin.debug:
