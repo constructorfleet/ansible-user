@@ -10,6 +10,10 @@
       ansible.builtin.debug:
         msg: "{{ xcode_cli_install }}"
         verbosity: 1
+    - name: Check if xcodebuild exists
+      ansible.buildin.command:
+        cmd: which -s xcodebuild
+      register: xcodebuild_exists 
     - name: Accept xcode license
       ansible.builtin.command:
         cmd: "xcodebuild -license accept"
@@ -17,6 +21,7 @@
       register: xcode_license_accept
       when:
         - user_has_sudo|default(False)
+        - xcodebuild_exists.rc == 0
       changed_when:
         - xcode_license_accept.changed
     - name: Print xcode licence result
@@ -25,6 +30,7 @@
         verbosity: 1
       when:
         - user_has_sudo|default(False)
+        - xcodebuild_exists.rc == 0
 
 
 - name: Install Homebrew
