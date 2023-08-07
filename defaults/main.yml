@@ -63,9 +63,7 @@ homebrew_cask_common_packages:
   - macfuse
   - google-chrome
   - firefox
-  - slack
   - signal
-  - sublime-text
   - viscosity
   - iterm2
 
