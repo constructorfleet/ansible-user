@@ -61,6 +61,8 @@
     id: "{{ item.id }}"
   loop: "{{ mas_packages | default([]) }}"
   when: mas_packages | length > 0
+  environment: "{{ homebrew_brew_bin_path }}:{{ ansible_env.PATH }}"
 - name: Install all configured App Store applications via mas-cli
   community.general.mas:
     upgrade_all: true
+  environment: "{{ homebrew_brew_bin_path }}:{{ ansible_env.PATH }}"
