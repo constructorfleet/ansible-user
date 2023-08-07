@@ -131,6 +131,7 @@
 - name: Execute any commands prior to installing homebrew packages
   ansible.builtin.command: "{{ item | default([]) }}"
   loop: "{{ pre_brew_install_scripts }}"
+  become: true
   when:
     - pre_brew_install_scripts | length > 0
   register: brew_preinstall
