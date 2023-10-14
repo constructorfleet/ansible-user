@@ -1,9 +1,10 @@
 ---
 homebrew_repo: https://github.com/Homebrew/brew
 
-local_username: "{{ ansible_env.USER }}"
-local_user_shell: /bin/zsh
-local_user_homedir: "{{ ansible_env.HOME }}"
+local_username: "{{ ansible_real_user_id }}"
+local_user_groupname: "{{ ansible_real_user_gid }}"
+local_user_shell: "{{ ansible_user_shell }}"
+local_user_homedir: "{{ ansible_user_dir }}"
 
 homebrew_prefix: "/opt"
 homebrew_nosudo_prefix: "{{ local_user_homedir }}"
@@ -18,8 +19,8 @@ mas_signin_dialog: false
 
 mas_packages: []
 
-pre_brew_install_scripts:
-  - softwareupdate --agree-to-license --install-rosetta
+pre_brew_install_scripts: []
+  # - softwareupdate --agree-to-license --install-rosetta
 
 homebrew_common_packages:
   - ssh-copy-id
