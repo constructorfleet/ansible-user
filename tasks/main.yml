@@ -4,16 +4,6 @@
   tags:
     - always
 
-- name: Get environment info
-  ansible.builtin.import_tasks: environment.yml
-  tags:
-    - always
-
-- name: Configure Shell
-  ansible.builtin.import_tasks: shell.yml
-  tags:
-    - shell
-
 - name: Configure SSH
   ansible.builtin.import_tasks: ssh.yml
   tags:
