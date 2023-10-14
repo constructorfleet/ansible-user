@@ -1,5 +1,5 @@
 ---
-- name: Ensure MAS is installed.
+- name: Ensure MAS is installed
   homebrew:
     name: mas
     state: present
@@ -54,7 +54,7 @@
 #   command: "{{ homebrew_brew_bin_path }}/mas upgrade"
 #   when: mas_upgrade_all_apps
 
-- name: Upgrade all present App Store appliications via mas-cli
+- name: Upgrade all present mas applications
   community.general.mas:
     state: present
     upgrade_all: true
@@ -63,8 +63,8 @@
   when: mas_packages | length > 0
   environment:
     PATH: "{{ homebrew_brew_bin_path }}:{{ ansible_env.PATH }}"
-- name: Install all configured App Store applications via mas-cli
+- name: Install all configured mas applications
   community.general.mas:
     upgrade_all: true
-  environment: 
+  environment:
     PATH: "{{ homebrew_brew_bin_path }}:{{ ansible_env.PATH }}"
