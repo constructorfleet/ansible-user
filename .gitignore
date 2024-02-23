@@ -4,3 +4,4 @@ collections/*
 roles/*
 !roles/requirements.y*ml
 venv
+.python-version
